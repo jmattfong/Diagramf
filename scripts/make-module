@@ -1,0 +1,54 @@
+#!/bin/sh
+
+GROUP_ID='com.jmattfong.diagramf'
+PROJECT_ROOT='diagramf'
+
+die () {
+    echo >&2 "$@"
+    exit 1
+}
+
+[ "$#" -eq 1 ] || die "1 argument required (module name), $# provided"
+
+echo "Making module $1"
+
+mkdir -p "$1/src/main/java"
+mkdir -p "$1/src/test/java"
+
+echo "<project xmlns=\"http://maven.apache.org/POM/4.0.0\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n\
+         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd\">\n\
+    <modelVersion>4.0.0</modelVersion>\n\
+\n\
+    <parent>\n\
+        <groupId>${GROUP_ID}</groupId>\n\
+        <artifactId>${PROJECT_ROOT}</artifactId>\n\
+        <version>0.1-SNAPSHOT</version>\n\
+    </parent>\n\
+\n\
+    <artifactId>$1</artifactId>\n\
+    <packaging>jar</packaging>\n\
+\n\
+    <dependencies>\n\
+        <dependency>\n\
+            <groupId>${GROUP_ID}</groupId>\n\
+            <artifactId>common</artifactId>\n\
+        </dependency>\n\
+    </dependencies>\n\
+\n\
+    <dependencyManagement>\n\
+        <dependencies>\n\
+            <dependency>\n\
+                <groupId>${GROUP_ID}</groupId>\n\
+                <artifactId>common-bom</artifactId>\n\
+                <version>0.1-SNAPSHOT</version>\n\
+                <type>pom</type>\n\
+                <scope>import</scope>\n\
+            </dependency>\n\
+        </dependencies>\n\
+    </dependencyManagement>\n\
+\n\
+</project>" > "$1/pom.xml"
+
+# TODO automate this
+echo "Remember to add this module to the parent pom:"
+echo "        <module>$1</module>"
